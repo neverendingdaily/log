@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Googleログインテスト</title>
+</head>
+<body>
+  <h1>ログイン機能のテスト</h1>
+
+  <!-- ログイン・ログアウトのボタン -->
+  <button id="login-btn">Googleでログイン</button>
+  <button id="logout-btn" style="display:none;">ログアウト</button>
+
+  <!-- ログインした人の名前を表示する場所 -->
+  <div id="user-info"></div>
+
+  <!-- ここからJavaScript -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    // ★ signInWithPopup に戻しました
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    // あなたの本物の鍵
+    const firebaseConfig = {
+      apiKey: "AIzaSyATdPsa7sSiQryE-vms1ewxKU6lrzTmv28",
+      authDomain: "neverendingdaily-c009f.firebaseapp.com",
+      projectId: "neverendingdaily-c009f",
+      storageBucket: "neverendingdaily-c009f.firebasestorage.app",
+      messagingSenderId: "273280307638",
+      appId: "1:273280307638:web:336f8cea737254568a7117",
+      measurementId: "G-TY6WLRK7JM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const loginBtn = document.getElementById('login-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const userInfo = document.getElementById('user-info');
+
+    // ★ ログインボタンが押されたときの命令（ポップアップ方式）
+    loginBtn.addEventListener('click', () => {
+      signInWithPopup(auth, provider)
+        .catch((error) => {
+          console.error("ログインエラー:", error);
+          alert("ログイン中にエラーが発生しました。");
+        });
+    });
+
+    // ログアウトボタンが押されたときの命令
+    logoutBtn.addEventListener('click', () => {
+      signOut(auth);
+    });
+
+    // ログイン状態が変わったときに自動で動く命令
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // ログインしている時
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "block";
+        userInfo.innerHTML = `<p>ようこそ、<b>${user.displayName}</b>さん！</p>`;
+      } else {
+        // ログアウトしている時
+        loginBtn.style.display = "block";
+        logoutBtn.style.display = "none";
+        userInfo.innerHTML = "<p>ログインしていません。</p>";
+      }
+    });
+  </script>
+</body>
+</html>
